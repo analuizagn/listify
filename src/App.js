@@ -1,23 +1,41 @@
-import logo from './logo.svg';
+import React from "react";
 import './App.css';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="main-container">
+      {/* Imagem de fundo com opacidade */}
+      <img
+        src="/imagem-background.jpeg"
+        alt="Background"
+        className="background-image"
+      />
+
+      {/* Content */}
+      <div className="content">
+        {/* Logo */}
+        <div className="logo">
+          {/* Ícone do carrinho */}
+          <img
+            src="/shopping-cart.png"
+            alt="Carrinho de compras"
+            className="cart-icon"
+          />
+          {/* LISTIFY */}
+          <h1 className="listify">LISTIFY</h1>
+        </div>
+
+        {/* Main Heading */}
+        <h2 className="main-heading">
+          Uma forma mais rápida e prática para fazer suas listas de compras
+        </h2>
+
+        {/* Subheading */}
+        <p className="subheading">Experimente agora!</p>
+
+        {/* Button */}
+        <button className="btn-enter">ENTRAR</button>
+      </div>
     </div>
   );
 }

@@ -1,0 +1,216 @@
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listify</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+        }
+        .checked-item {
+            text-decoration: line-through;
+            color: gray;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col">
+    <div class="container mx-auto p-4 flex-grow">
+        <h1 class="text-3xl font-bold mb-4">Listify</h1>
+        <div id="listas" class="space-y-4">
+            <!-- Listas de compras minimizadas aparecerão aqui -->
+        </div>
+        <div class="fixed bottom-4 right-4">
+            <button id="novaListaBtn" class="bg-blue-500 text-white p-4 rounded-full shadow-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300">
+                <i class="fas fa-plus"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal para criar nova lista -->
+    <div id="modalNovaLista" class="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center hidden">
+        <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
+            <input type="text" id="nomeLista" class="w-full p-2 border border-gray-300 rounded mb-4" placeholder="Nome da Lista">
+            <div id="itens" class="space-y-2">
+                <!-- Itens da lista aparecerão aqui -->
+            </div>
+            <button id="adicionarItemBtn" class="bg-green-500 text-white p-2 rounded shadow hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-300 mb-4">
+                Adicionar Item
+            </button>
+            <div class="flex justify-end space-x-2">
+                <button id="cancelarBtn" class="bg-gray-500 text-white p-2 rounded shadow hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-300">
+                    Cancelar
+                </button>
+                <button id="salvarListaBtn" class="bg-blue-500 text-white p-2 rounded shadow hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300">
+                    Salvar Lista
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mesma estrutura HTML com ajustes no JavaScript -->
+    <script>
+        function adicionarItem(containerId, nome = '', categoria = 'alimentos', concluido = false) {
+            const itemDiv = document.createElement('div');
+            itemDiv.classList.add('flex', 'space-x-2', 'items-center');
+            itemDiv.innerHTML = `
+                <input type="checkbox" class="mr-2" ${concluido ? 'checked' : ''}>
+                <input type="text" class="w-full p-2 border border-gray-300 rounded ${concluido ? 'line-through text-gray-500' : ''}" value="${nome}" placeholder="Nome do Item">
+                <select class="p-2 border border-gray-300 rounded">
+                    <option value="alimentos" ${categoria === 'alimentos' ? 'selected' : ''}>Alimentos</option>
+                    <option value="bebidas" ${categoria === 'bebidas' ? 'selected' : ''}>Bebidas</option>
+                    <option value="limpeza" ${categoria === 'limpeza' ? 'selected' : ''}>Limpeza</option>
+                    <option value="higiene" ${categoria === 'higiene' ? 'selected' : ''}>Higiene</option>
+                </select>
+                <button class="text-red-500 hover:text-red-700 focus:outline-none">
+                    <i class="fas fa-trash"></i>
+                </button>
+            `;
+            document.getElementById(containerId).appendChild(itemDiv);
+    
+            // Exclusão do item
+            itemDiv.querySelector('button').addEventListener('click', function () {
+                itemDiv.remove();
+            });
+    
+            // Atualizar visual do item ao marcar checkbox
+            const checkbox = itemDiv.querySelector('input[type="checkbox"]');
+            const textInput = itemDiv.querySelector('input[type="text"]');
+            checkbox.addEventListener('change', function () {
+                if (this.checked) {
+                    textInput.classList.add('line-through', 'text-gray-500');
+                } else {
+                    textInput.classList.remove('line-through', 'text-gray-500');
+                }
+            });
+        }
+    
+        document.getElementById('novaListaBtn').addEventListener('click', function () {
+            document.getElementById('modalNovaLista').classList.remove('hidden');
+        });
+    
+        document.getElementById('cancelarBtn').addEventListener('click', function () {
+            document.getElementById('modalNovaLista').classList.add('hidden');
+        });
+    
+        document.getElementById('adicionarItemBtn').addEventListener('click', function () {
+            adicionarItem('itens');
+        });
+    
+        document.getElementById('salvarListaBtn').addEventListener('click', function () {
+            const nomeLista = document.getElementById('nomeLista').value;
+            const itens = Array.from(document.getElementById('itens').children).map(itemDiv => ({
+                nome: itemDiv.querySelector('input[type="text"]').value,
+                categoria: itemDiv.querySelector('select').value,
+                concluido: itemDiv.querySelector('input[type="checkbox"]').checked
+            }));
+    
+            const listaDiv = document.createElement('div');
+            listaDiv.classList.add('bg-white', 'p-4', 'rounded-lg', 'shadow', 'flex', 'justify-between', 'items-center', 'cursor-pointer');
+            listaDiv.innerHTML = `
+                <div>
+                    <h3 class="text-xl font-bold">${nomeLista}</h3>
+                    <ul class="list-disc pl-5">
+                        ${itens.map(item => `
+                            <li class="${item.concluido ? 'line-through text-gray-500' : ''}">
+                                ${item.nome} (${item.categoria})
+                            </li>
+                        `).join('')}
+                    </ul>
+                </div>
+                <button class="text-red-500 hover:text-red-700 focus:outline-none">
+                    <i class="fas fa-trash"></i>
+                </button>
+            `;
+            document.getElementById('listas').appendChild(listaDiv);
+    
+            // Exclusão da lista
+            listaDiv.querySelector('button').addEventListener('click', function (e) {
+                e.stopPropagation();
+                if (confirm('Você tem certeza que deseja excluir esta lista?')) {
+                    listaDiv.remove();
+                }
+            });
+    
+            // Abrir modal de edição
+            listaDiv.addEventListener('click', function () {
+                abrirModalEdicao(nomeLista, itens, listaDiv);
+            });
+    
+            // Limpar modal
+            document.getElementById('modalNovaLista').classList.add('hidden');
+            document.getElementById('nomeLista').value = '';
+            document.getElementById('itens').innerHTML = '';
+        });
+    
+        function abrirModalEdicao(nomeLista, itens, listaDiv) {
+            const modalEdicao = document.createElement('div');
+            modalEdicao.classList.add('fixed', 'inset-0', 'bg-gray-800', 'bg-opacity-75', 'flex', 'items-center', 'justify-center');
+            modalEdicao.innerHTML = `
+                <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
+                    <input type="text" id="nomeListaEdit" class="w-full p-2 border border-gray-300 rounded mb-4" value="${nomeLista}">
+                    <div id="itensEdit" class="space-y-2">
+                        ${itens.map(item => `
+                            <div class="flex space-x-2 items-center">
+                                <input type="checkbox" class="mr-2" ${item.concluido ? 'checked' : ''}>
+                                <input type="text" class="w-full p-2 border border-gray-300 rounded ${item.concluido ? 'line-through text-gray-500' : ''}" value="${item.nome}">
+                                <select class="p-2 border border-gray-300 rounded">
+                                    <option value="alimentos" ${item.categoria === 'alimentos' ? 'selected' : ''}>Alimentos</option>
+                                    <option value="bebidas" ${item.categoria === 'bebidas' ? 'selected' : ''}>Bebidas</option>
+                                    <option value="limpeza" ${item.categoria === 'limpeza' ? 'selected' : ''}>Limpeza</option>
+                                    <option value="higiene" ${item.categoria === 'higiene' ? 'selected' : ''}>Higiene</option>
+                                </select>
+                                <button class="text-red-500 hover:text-red-700 focus:outline-none">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <button id="adicionarItemEdit" class="bg-green-500 text-white p-2 rounded shadow hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-300 mb-4">
+                        Adicionar Item
+                    </button>
+                    <div class="flex justify-end space-x-2">
+                        <button id="cancelarEdicaoBtn" class="bg-gray-500 text-white p-2 rounded shadow hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-300">
+                            Cancelar
+                        </button>
+                        <button id="salvarEdicaoBtn" class="bg-blue-500 text-white p-2 rounded shadow hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300">
+                            Salvar
+                        </button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modalEdicao);
+    
+            document.getElementById('adicionarItemEdit').addEventListener('click', function () {
+                adicionarItem('itensEdit');
+            });
+    
+            document.getElementById('cancelarEdicaoBtn').addEventListener('click', function () {
+                modalEdicao.remove();
+            });
+    
+            document.getElementById('salvarEdicaoBtn').addEventListener('click', function () {
+                const novoNomeLista = document.getElementById('nomeListaEdit').value;
+                const novosItens = Array.from(document.getElementById('itensEdit').children).map(itemDiv => ({
+                    nome: itemDiv.querySelector('input[type="text"]').value,
+                    categoria: itemDiv.querySelector('select').value,
+                    concluido: itemDiv.querySelector('input[type="checkbox"]').checked
+                }));
+    
+                listaDiv.querySelector('h3').textContent = novoNomeLista;
+                listaDiv.querySelector('ul').innerHTML = novosItens.map(item => `
+                    <li class="${item.concluido ? 'line-through text-gray-500' : ''}">
+                        ${item.nome} (${item.categoria})
+                    </li>
+                `).join('');
+    
+                modalEdicao.remove();
+            });
+        }
+    </script>
+    
+    
+</body>
+</html>
