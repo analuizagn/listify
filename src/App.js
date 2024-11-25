@@ -10,29 +10,30 @@ function App() {
   };
 
   return (
-    <div className="main-container">
-      {/* Imagem de fundo com opacidade */}
-      <img
-        src="/imagem-background.jpeg"
-        alt="Background"
-        className="background-image"
-      />
+    <div className={`main-container ${showLogin ? 'login-active' : ''}`}>
+      {/* Imagem de fundo com opacidade (somente na tela inicial) */}
+      {!showLogin && (
+        <img
+          src="/imagem-background.jpeg"
+          alt="Background"
+          className="background-image"
+        />
+      )}
 
       {/* Content */}
       <div className="content">
         {showLogin ? (
-          <RegistrationForm onAuthenticate={() => console.log('Usuário autenticado')} />
+          // Exibe o formulário de registro
+          <RegistrationForm />
         ) : (
           <>
             {/* Logo */}
             <div className="logo">
-              {/* Ícone do carrinho */}
               <img
                 src="/shopping-cart.png"
                 alt="Carrinho de compras"
                 className="cart-icon"
               />
-              {/* LISTIFY */}
               <h1 className="listify">LISTIFY</h1>
             </div>
 

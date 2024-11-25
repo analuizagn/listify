@@ -88,4 +88,13 @@
   
   .btn-enter:hover {
     background-color: #365315;
-  }  
+  }
+
+  /* Tela de login ativa */
+.main-container.login-active {
+  background-color: #f4f4f4;
+}
+
+.main-container.login-active .background-image {
+  display: none;
+}
